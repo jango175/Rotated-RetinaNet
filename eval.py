@@ -248,8 +248,8 @@ if __name__ == '__main__':
     parser.add_argument('--target_size', dest='target_size', default=[800], type=int) 
     parser.add_argument('--hyp', type=str, default='hyp.py', help='hyper-parameter path')
     
-    # parser.add_argument('--dataset', nargs='?', type=str, default='DOTA')    
-    # parser.add_argument('--test_path', nargs='?', type=str, default='DOTA/val')
+    parser.add_argument('--dataset', nargs='?', type=str, default='DOTA')    
+    parser.add_argument('--test_path', nargs='?', type=str, default='/content/drive/MyDrive/Colab Notebooks/Rotated-RetinaNet/DOTA/val')
 
     # parser.add_argument('--dataset', nargs='?', type=str, default='IC13')
     # parser.add_argument('--test_path', type=str, default='ICDAR13/test') 
@@ -257,8 +257,8 @@ if __name__ == '__main__':
     # parser.add_argument('--dataset', nargs='?', type=str, default='VOC')
     # parser.add_argument('--test_path', type=str, default='VOC2007/ImageSets/Main/test.txt')   
    
-    parser.add_argument('--dataset', nargs='?', type=str, default='NWPU_VHR')
-    parser.add_argument('--test_path', type=str, default='NWPU_VHR/test.txt') 
+    # parser.add_argument('--dataset', nargs='?', type=str, default='NWPU_VHR')
+    # parser.add_argument('--test_path', type=str, default='NWPU_VHR/test.txt') 
 
     arg = parser.parse_args()
     hyps = hyp_parse(arg.hyp)

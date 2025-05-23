@@ -35,9 +35,9 @@ def generate_iamgets(dataset=None):
     assert dataset in DATASETS, 'Not supported dataset'
     if dataset  == 'DOTA':
         # For DOTA
-        # train_img_path = r"/data-input/dal/DOTA/trainsplit/images" 
-        # val_img_path = r"/data-input/dal/DOTA/valsplit/images" 
-        # set_file = r'/data-input/dal/DOTA/trainval.txt'
+        train_img_path = "/content/drive/MyDrive/Colab Notebooks/Rotated-RetinaNet/DOTA/trainsplit/images" 
+        val_img_path = "/content/drive/MyDrive/Colab Notebooks/Rotated-RetinaNet/DOTA/valsplit/images" 
+        set_file = '/content/drive/MyDrive/Colab Notebooks/Rotated-RetinaNet/DOTA/trainval.txt'
         files= sorted(glob.glob(os.path.join(train_img_path, '**.*' ))) + sorted(glob.glob(os.path.join(val_img_path, '**.*' )))
         with open(set_file,'w') as f:
             for file in files:
@@ -91,7 +91,7 @@ def generate_iamgets(dataset=None):
 
 
 if __name__ == '__main__':
-    DATASET = 'HRSC2016'
+    DATASET = 'DOTA'
     generate_iamgets(DATASET)
 
 

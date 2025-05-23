@@ -6,3 +6,12 @@
 *.DS_Store
 .idea
 */__pycache__
+*/*.egg-info
+*.egg
+*/build/
+DOTA/
+dota_res/
+outputs/
+.env/
+PR-curve.png
+results.txt

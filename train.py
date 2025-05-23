@@ -9,6 +9,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as data
+import torch.distributed as dist
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -243,13 +244,13 @@ if __name__ == '__main__':
     parser.add_argument('--weight', type=str, default='')   # 
     parser.add_argument('--multi-scale', action='store_true', help='adjust (67% - 150%) img_size every 10 batches')
      # HRSC
-    parser.add_argument('--dataset', type=str, default='HRSC2016')      
-    parser.add_argument('--train_path', type=str, default='HRSC2016/train.txt')    
-    parser.add_argument('--test_path', type=str, default='HRSC2016/test.txt')        
+    # parser.add_argument('--dataset', type=str, default='HRSC2016')      
+    # parser.add_argument('--train_path', type=str, default='HRSC2016/train.txt')    
+    # parser.add_argument('--test_path', type=str, default='HRSC2016/test.txt')        
 
     # DOTA
-    # parser.add_argument('--dataset', type=str, default='DOTA')    
-    # parser.add_argument('--train_path', type=str, default='DOTA/trainval.txt')
+    parser.add_argument('--dataset', type=str, default='DOTA')    
+    parser.add_argument('--train_path', type=str, default='DOTA/trainval.txt')
 
     # IC15
     # parser.add_argument('--dataset', type=str, default='IC15')

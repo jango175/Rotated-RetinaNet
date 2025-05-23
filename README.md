@@ -1,76 +1,95 @@
-# Rotation RetinaNet
+# Rotated-Retinaned fork for Google Colab
+
+This is a fork of the Rotated-RetinaNet implemetation for Google Colab usage. This code was changed to primary support the DOTAv1.5 dataset and a newer Python version.
+
+### The script was tested on:
+* Python 3.11.12
+* torch 2.6.0+cu124
+* cuda_12.5.r12.5/compiler.34385749_0
+* gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
+
+## Rotation RetinaNet
 
 The codes build R-RetinaNet for arbitrary-oriented object detection. It supports the following datasets: DOTA, HRSC2016, ICDAR2013, ICDAR2015, UCAS-AOD, NWPU VHR-10, VOC2007. 
 
-### Performance
-This implementation reaches 24 fps on RTX 2080 Ti. 
+## Getting started
 
-The performance is shown as follow:
+Follow the `demo.ipynb` or follow the next steps one by one.
 
-#### HRSC2016
-
-Note that VOC07 metric is used for evaluation.
-
-| Dataset          | Bbox |Backbone   | Input size | mAP       |
-| ---------------  | ---- | ---------- | --------- |---------|
-| HRSC2016         | OBB  | ResNet-50  | 416 x 416  | 80.81    |
-| UCAS-AOD         | OBB  |ResNet-50  | 800 x 800  | 87.57     |
-| ICDAR 2013       | OBB  |ResNet-50 | 800 x 800  | 77.20    |
-| ICDAR 2015       | HBB  |ResNet-50 | 800 x 800  | 77.50 |
-| NWPU VHR-10      | HBB  |ResNet-50 | 800 x 800  | 86.40 |
-
-Note that VOC07 metric is used for HRSC2016, UCAS-AOD, NWPU VHR-10, F1 score for IC13 and IC13. 3 anchors are preset for each location in feature maps. All experiments are conducted with data augmentation including random flip, rotation and HSV color space transform.
-
-
-
-## Getting Started
 ### Installation
-Build the Cython  and CUDA modules:
-```
+Build the Cython and CUDA modules:
+```bash
 cd $ROOT/utils
 sh make.sh
 ```
 
-Install DotaDevKit:
-
-```
+Install Dota-devkit:
+```bash
 sudo apt-get install swig
 swig -c++ -python polyiou.i
 python setup.py build_ext --inplace
 ```
 
 ### Inference
-
-```
-python demo.py
+```bash
+python demo.py --weight None
 ```
 
 ### Train
-1. prepare dataset and move it into the `$ROOT` directory.
-2. generate imageset files:
+1. Prepare dataset and move it into the `$ROOT` directory. First, make sure your initial data are in the following structure.
 ```
+$ROOT/DOTA
+├── train
+│   ├──images
+│   └── labelTxt
+├── val
+│   ├── images
+│   └── labelTxt
+└── test
+    └── images
+```
+
+Then split the dataset with:
+```
+cd $ROOT/datasets/DOTA_devkit
+
+python ImgSplit_multi_process.py \
+    --raw_root_dir $ROOT/DOTA/train \
+    --split_root_dir $ROOT/DOTA/trainsplit
+
+!python ImgSplit_multi_process.py \
+    --raw_root_dir $ROOT/DOTA/val \
+    --split_root_dir $ROOT/DOTA/valsplit
+
+```
+
+2. Generate imageset files:
+```bash
 cd $ROOT/datasets
 python generate_imageset.py
 ```
-3. start training:
-```
+
+3. Adjust the hyperparameters in `hyp.py` file.
+
+4. Start training:
+```bash
 python train.py
 ```
+
 ### Evaluation
-prepare labels, take hrsc for example:
-```
-cd $ROOT/datasets/evaluate
-python hrsc2gt.py
-```
 start evaluation:
-```
+```bash
 python eval.py
 ```
 Note that :
-
-- the script  needs to be executed **only once**.
-- the imageset file used in `hrsc2gt.py` is generated from `generate_imageset.py`.
+- the script needs to be executed **only once**.
+- the imageset file used is generated from `generate_imageset.py`.
 
 ## Detection Result
+<img src="100001410.jpg" alt="100001410"  />
 
-<img src="outputs\100001410.jpg" alt="100001410"  />
+## Sources
+* https://github.com/ming71/Rotated-RetinaNet
+* https://captain-whu.github.io/DOTA/dataset.html
+* https://github.com/CAPTAIN-WHU/DOTA_devkit
+* https://github.com/lehduong/torch-warmup-lr

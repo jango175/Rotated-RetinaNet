@@ -279,7 +279,10 @@ def detections2Task1(srcpath, dstpath):
 
         subname = custombasename(filepath)
         pattern2 = re.compile(r'__([\d+\.]+)__\d+___')
-        rate = re.findall(pattern2, subname)[0]
+        rate = re.findall(pattern2, subname)
+        if len(rate) > 0:
+            rate = rate[0]
+            # print('rate:', rate)
 
         for obj in objects:
             category = obj['classname']

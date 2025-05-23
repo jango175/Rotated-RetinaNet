@@ -57,6 +57,8 @@ def demo(args):
         else:
             model.load_state_dict(chkpt)
         print('load weight from: {}'.format(args.weight))
+    else:
+        print('Invalid model!')
     model.eval()
 
     t0 = time.time()
@@ -101,7 +103,7 @@ def demo(args):
 
             out_path = os.path.join('outputs' , os.path.split(im_path)[1])
             cv2.imwrite(out_path, src)
-    ## DOTA detct on large image
+    ## DOTA detect on large image
     else:
         evaluate(args.target_size,
                 args.ims_dir,    
@@ -113,14 +115,14 @@ def demo(args):
         if  os.path.exists('outputs/dota_out'):
             shutil.rmtree('outputs/dota_out')
         os.mkdir('outputs/dota_out')
-        exec('cd outputs &&  rm -rf detections && rm -rf integrated  && rm -rf merged')    
+        # exec('cd outputs &&  rm -rf detections && rm -rf integrated  && rm -rf merged')    
         ResultMerge('outputs/detections', 
                     'outputs/integrated',
                     'outputs/merged',
                     'outputs/dota_out')
         img_path = os.path.join(args.ims_dir,'images')
         label_path = 'outputs/dota_out'
-        save_imgs =  False
+        save_imgs = True
         if save_imgs:
             show_dota_results(img_path,label_path)
     print('Done. (%.3fs)' % (time.time() - t0))
@@ -134,11 +136,11 @@ if __name__ == '__main__':
     # parser.add_argument('--dataset', type=str, default='HRSC2016')    
     # parser.add_argument('--ims_dir', type=str, default='HRSC2016/Test') 
     # DOTA 
-    # parser.add_argument('--dataset', type=str, default='DOTA')
-    # parser.add_argument('--ims_dir', type=str, default='DOTA/test')
+    parser.add_argument('--dataset', type=str, default='DOTA')
+    parser.add_argument('--ims_dir', type=str, default='DOTA/train')
     # UCAS-AOD
-    parser.add_argument('--dataset', type=str, default='UCAS_AOD')
-    parser.add_argument('--ims_dir', type=str, default='UCAS_AOD/Test')  
+    # parser.add_argument('--dataset', type=str, default='UCAS_AOD')
+    # parser.add_argument('--ims_dir', type=str, default='UCAS_AOD/Test')  
     # IC13
     # parser.add_argument('--dataset', type=str, default='IC13')
     # parser.add_argument('--ims_dir', type=str, default='ICDAR13/test')

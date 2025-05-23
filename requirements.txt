@@ -1,6 +1,8 @@
-Cython==0.29.17
+Cython==3.0.12
 imgaug==0.4.0
-Pillow
-six
-torch-warmup-lr==1.0.0
-tqdm
+Pillow==11.2.1
+six==1.17.0
+# torch-warmup-lr==1.0.0
+tqdm==4.67.1
+numpy==1.26.4
+ipdb==0.13.13

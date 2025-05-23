@@ -15,6 +15,7 @@ from multiprocessing import Pool
 from functools import partial
 import time
 from tqdm import tqdm
+import argparse
 
 def choose_best_pointorder_fit_another(poly1, poly2):
     """
@@ -299,23 +300,29 @@ def rm_background(root_dir):
         
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Paths')
+    parser.add_argument('--raw_root_dir', type=str, default='/content/drive/MyDrive/Colab Notebooks/Rotated-RetinaNet/DOTA/train')
+    parser.add_argument('--split_root_dir', type=str, default='/content/drive/MyDrive/Colab Notebooks/Rotated-RetinaNet/DOTA/trainsplit')
+
     # example usage of ImgSplit
     # raw_root_dir = r'/data-input/das_dota/DOTA/train'
     # split_root_dir = r'/data-input/das_dota/DOTA/trainsplit'
 
-    raw_root_dir = r'/data-input/das_dota/DOTA/val'
-    split_root_dir = r'/data-input/das_dota/DOTA/valsplit'
+    # raw_root_dir = r'/content/drive/MyDrive/Colab Notebooks/Rotated-RetinaNet/DOTA/val'
+    # split_root_dir = r'/content/drive/MyDrive/Colab Notebooks/Rotated-RetinaNet/DOTA/valsplit'
 
-    start = time.clock()
-    split = splitbase(raw_root_dir,
-                      split_root_dir,
+    args = parser.parse_args()
+
+    start = time.process_time()
+    split = splitbase(args.raw_root_dir,
+                      args.split_root_dir,
                       gap=150,  
                       subsize=800,
                       num_process=8
                       )
     split.splitdata(1)
 
-    rm_background(split_root_dir)
+    rm_background(args.split_root_dir)
 
-    elapsed = (time.clock() - start)
+    elapsed = (time.process_time() - start)
     print("Time used:", elapsed)

@@ -121,7 +121,7 @@ def py_cpu_nms_poly_fast(dets, thresh):
         # order_hbb = order[h_keep_inds + 1]
         order = order[inds + 1]
         # pdb.set_trace()
-        # order = np.concatenate((order_obb, order_hbb), axis=0).astype(np.int)
+        # order = np.concatenate((order_obb, order_hbb), axis=0).astype(np.int_)
     return keep
 
 def py_cpu_nms(dets, thresh):
@@ -184,9 +184,10 @@ def poly2origpoly(poly, x, y, rate):
     return origpoly
 
 def mergesingle(dstpath, nms, fullname):
+    # print('fullname:', fullname)
     name = util.custombasename(fullname)
-    #print('name:', name)
     dstname = os.path.join(dstpath, name + '.txt')
+    # print('dstname:', dstname)
     with open(fullname, 'r') as f_in:
         nameboxdict = {}
         lines = f_in.readlines()
@@ -195,20 +196,29 @@ def mergesingle(dstpath, nms, fullname):
             subname = splitline[0]
             splitname = subname.split('__')
             oriname = splitname[0]
-            pattern1 = re.compile(r'__\d+___\d+')
-            #print('subname:', subname)
-            x_y = re.findall(pattern1, subname)
-            x_y_2 = re.findall(r'\d+', x_y[0])
-            x, y = int(x_y_2[0]), int(x_y_2[1])
+
+            poly = list(map(float, splitline[2:]))
+            det = poly
 
             pattern2 = re.compile(r'__([\d+\.]+)__\d+___')
+            rate = re.findall(pattern2, subname)
+            if len(rate) > 0:
+                rate = rate[0]
 
-            rate = re.findall(pattern2, subname)[0]
+                pattern1 = re.compile(r'__\d+___\d+')
+                # print('subname:', subname)
+                x_y = re.findall(pattern1, subname)
+                if x_y == []:
+                    print('No x_y found!')
+                    continue
+                x_y_2 = re.findall(r'\d+', x_y[0])
+                x, y = int(x_y_2[0]), int(x_y_2[1])
+                # print('x, y:', x, y)
+                
+                origpoly = poly2origpoly(poly, x, y, rate)
+                det = origpoly
 
             confidence = splitline[1]
-            poly = list(map(float, splitline[2:]))
-            origpoly = poly2origpoly(poly, x, y, rate)
-            det = origpoly
             det.append(confidence)
             det = list(map(float, det))
             if (oriname not in nameboxdict):
@@ -218,7 +228,7 @@ def mergesingle(dstpath, nms, fullname):
         with open(dstname, 'w') as f_out:
             for imgname in nameboxnmsdict:
                 for det in nameboxnmsdict[imgname]:
-                    #print('det:', det)
+                    # print('det:', det)
                     confidence = det[-1]
                     bbox = det[0:-1]
                     outline = imgname + ' ' + str(confidence) + ' ' + ' '.join(map(str, bbox))
@@ -249,6 +259,7 @@ def mergebyrec(srcpath, dstpath):
     mergebase(srcpath,
               dstpath,
               py_cpu_nms)
+
 def mergebypoly(srcpath, dstpath):
     """
     srcpath: result files before merge and nms
@@ -264,17 +275,10 @@ def mergebypoly(srcpath, dstpath):
               dstpath,
               py_cpu_nms_poly_fast)
 
-
-
-
-
-
-
 def ResultMerge(outputs,
                 integrated_outputs,
                 merged_outputs,
                 dota_outputs = None): 
-
 
     if not os.listdir(outputs):
         raise RuntimeError('No detection results founded in {} ! '.format(outputs))    
