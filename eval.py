@@ -163,6 +163,7 @@ def dota_evaluate(model,
     res_dir = os.path.join(root_dir, 'detections')          # 裁剪图像的检测结果   
     integrated_dir = os.path.join(root_dir, 'integrated')   # 将裁剪图像整合后成15个txt的结果
     merged_dir = os.path.join(root_dir, 'merged')           # 将整合后的结果NMS
+    labels_dir = os.path.join(root_data, splitdata + '/' + 'labelTxt')
 
     if os.path.exists(root_dir):
         shutil.rmtree(root_dir)
@@ -197,7 +198,11 @@ def dota_evaluate(model,
                 )
     ResultMerge(res_dir, integrated_dir, merged_dir)
     ## calc mAP
-    mAP, classaps = task1_eval(merged_dir, test_path)
+    if os.path.exists(labels_dir):
+        mAP, classaps = task1_eval(merged_dir, test_path)
+    else:
+        print('No labels found!')
+        mAP = 0
     # # display result
     pf = '%20s' + '%10.3g' * 6  # print format
     print(pf % ('all', len(ims_list), nt, 0, 0, mAP, 0))

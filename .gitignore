@@ -13,6 +13,6 @@ DOTA/
 dota_res/
 outputs/
 .env/
-PR-curve.png
+PR-curve*.png
 results.txt
 .vscode/

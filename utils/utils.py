@@ -6,8 +6,21 @@ import numpy as np
 import numpy.random as npr
 import torch
 import torchvision.transforms as transforms
+import shutil
 
 from utils.bbox import rbox_2_quad
+
+# use predefined 32 colors for DOTA dataset
+DOTA_COLORS = [
+    (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0),
+    (255, 0, 255), (0, 255, 255), (128, 128, 128), (128, 0, 0),
+    (0, 128, 0), (0, 0, 128), (128, 128, 0), (128, 0, 128),
+    (0, 128, 128), (192, 192, 192), (64, 64, 64), (64, 0, 0),
+    (0, 64, 0), (0, 0, 64), (64, 64, 0), (64, 0, 64),
+    (0, 64, 64), (192, 192, 128), (192, 128, 192), (128, 192, 192),
+    (255, 165, 0), (255,20 ,147),(75 ,0 ,130),(238 ,130 ,238),
+    (123 ,104 ,238),(139 ,69 ,19),(205 ,92 ,92),(210 ,105 ,30)
+]
 
 
 def init_seeds(seed=0):
@@ -209,8 +222,9 @@ class Reshape(object):
 ###
 def show_dota_results(img_path,label_path):
     save_path = 'dota_res'
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
+    if os.path.exists(save_path):
+        shutil.rmtree(save_path)
+    os.mkdir(save_path)
     merged_files = os.listdir(save_path)
     func = get_DOTA_points
     # for folder
@@ -224,8 +238,15 @@ def show_dota_results(img_path,label_path):
         xml_names = [os.path.splitext(x)[0] for x in xml_files]
         for img_name in img_names:
             if img_name not in xml_names:
+                print('No xml for %s' % img_name)
                 img_files.remove(img_name+'.png')
 #         import ipdb;ipdb.set_trace()
+
+        for xml_name in xml_names:
+            if xml_name not in img_names:
+                print('No img for %s' % xml_name)
+                xml_files.remove(xml_name+'.txt')
+
         assert len(img_files) == len(xml_files), 'Not matched between imgs and res!'
         iterations = zip(img_files,xml_files)
         for iter in iterations:
@@ -235,8 +256,20 @@ def show_dota_results(img_path,label_path):
             # object_coors = get_yolo_points(os.path.join(label_path,iter[1]), rotate=True)
             if not iter[0].endswith('.txt'):
                 object_coors = func(os.path.join(label_path,iter[1]),True)
+
+                # read labels from txt
+                object_labels = []
+                with open(os.path.join(label_path,iter[1]), 'r') as f:
+                    lines = f.readlines()
+                    for line in lines:
+                        if len(line.strip()) == 0: continue
+                        label = line.strip().split(' ')[-1]
+                        object_labels.append(label)
+
                 if len(object_coors):
-                    drawbox(os.path.join(img_path,iter[0]),object_coors, save_path =save_path )
+                    # drawbox(os.path.join(img_path,iter[0]),object_coors, save_path =save_path )
+                    drawbox_with_label(os.path.join(img_path,iter[0]), object_coors, object_labels,
+                                       save_flag=True, save_path=save_path)
                 else:
                     print('No obj!')
     
@@ -254,14 +287,43 @@ def drawbox(img_path,object_coors,save_flag=True,save_path=None):
 
     img=cv2.imread(img_path,1)
     for coor in object_coors:
-        img = cv2.polylines(img,[coor],True,(0,0,255),2)	
-        if save_flag:
-            cv2.imwrite(os.path.join(save_path,os.path.split(img_path)[1]), img)
-        else: 
-            cv2.imshow(img_path,img)
-            cv2.moveWindow(img_path,100,100)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+        img = cv2.polylines(img,[coor],True,(0,0,255),2)
+    if save_flag:
+        cv2.imwrite(os.path.join(save_path,os.path.split(img_path)[1]), img)
+    else: 
+        cv2.imshow(img_path,img)
+        cv2.moveWindow(img_path,100,100)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+
+def drawbox_with_label(img_path,object_coors,labels=None,save_flag=True,save_path=None):
+    print(img_path)
+
+    # use different color for each label
+    if labels is not None:
+        unique_labels = list(set(labels))
+        colors = {label: DOTA_COLORS[i % len(DOTA_COLORS)] for i, label in enumerate(unique_labels)}
+    else:
+        colors = (0, 0, 255)  # Default color if no labels are provided
+
+    img=cv2.imread(img_path,1)
+    for i,coor in enumerate(object_coors):
+        if labels is not None:
+            label = labels[i]
+            color = colors[label]
+            img = cv2.polylines(img,[coor],True,color,2)
+            cv2.putText(img, label, (coor[0][0], coor[0][1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+        else:
+            img = cv2.polylines(img,[coor],True,(0,0,255),2)
+
+    if save_flag:
+        cv2.imwrite(os.path.join(save_path,os.path.split(img_path)[1]), img)
+    else:
+        cv2.imshow(img_path,img)
+        cv2.moveWindow(img_path,100,100)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
 
 
