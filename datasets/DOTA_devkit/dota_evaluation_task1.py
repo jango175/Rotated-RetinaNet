@@ -330,11 +330,11 @@ def voc_eval(detpath,
 def eval_map(detpath,annopath,imagesetfile, use_07_metric=False):
 
     classnames = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
-                'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 'harbor', 'swimming-pool', 'helicopter']
+                'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 'harbor', 'swimming-pool', 'helicopter', 'container-crane']
     classaps = []
     map = 0
     for classname in classnames:
-        # print('classname:', classname)
+        print('classname:', classname)
         rec, prec, ap = voc_eval(detpath,
              annopath,
              imagesetfile,
@@ -342,17 +342,17 @@ def eval_map(detpath,annopath,imagesetfile, use_07_metric=False):
              ovthresh=0.5,
              use_07_metric=use_07_metric)
         map = map + ap
-        #print('rec: ', rec, 'prec: ', prec, 'ap: ', ap)
+        print('rec: ', rec, 'prec: ', prec, 'ap: ', ap)
 #         print('ap: ', ap)
         classaps.append(ap)
 
-        # umcomment to show p-r curve of each category
+        # uncomment to show p-r curve of each category
         plt.figure(figsize=(8,4))
         plt.xlabel('recall')
         plt.ylabel('precision')
         plt.plot(rec, prec)
         plt.show()
-        plt.savefig('PR-curve')
+        plt.savefig(f'PR-curve-{classname}.png')
     map = map/len(classnames)
     # print('map:', map)
     classaps = 100*np.array(classaps)

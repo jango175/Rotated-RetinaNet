@@ -21,7 +21,6 @@ from utils.map import eval_mAP
 from datasets.DOTA_devkit.ResultMerge_multi_process import ResultMerge
 from datasets.DOTA_devkit.dota_evaluation_task1 import task1_eval
 
-
 DATASETS = {'VOC' : VOCDataset ,
             'IC15': IC15Dataset,
             'IC13': IC13Dataset,
@@ -146,7 +145,7 @@ def data_evaluate(model,
         assert len(os.listdir(os.path.join(root_dir,'ground-truth'))) != 0, 'No labels found in test/ground-truth!! '
     mAP = eval_mAP(root_dir, use_07_metric=False)
     # display result
-    pf = '%20s' + '%10.3g' * 6  # print format    
+    pf = '%20s' + '%10.3g' * 6  # print format
     print(pf % ('all', len(ims_list), nt, 0, 0, mAP, 0))
     return 0, 0, mAP, 0 
 
@@ -165,7 +164,7 @@ def dota_evaluate(model,
     integrated_dir = os.path.join(root_dir, 'integrated')   # 将裁剪图像整合后成15个txt的结果
     merged_dir = os.path.join(root_dir, 'merged')           # 将整合后的结果NMS
 
-    if  os.path.exists(root_dir):
+    if os.path.exists(root_dir):
         shutil.rmtree(root_dir)
     os.makedirs(root_dir)
 
@@ -200,7 +199,7 @@ def dota_evaluate(model,
     ## calc mAP
     mAP, classaps = task1_eval(merged_dir, test_path)
     # # display result
-    pf = '%20s' + '%10.3g' * 6  # print format    
+    pf = '%20s' + '%10.3g' * 6  # print format
     print(pf % ('all', len(ims_list), nt, 0, 0, mAP, 0))
     return 0, 0, mAP, 0 
 
@@ -248,7 +247,7 @@ if __name__ == '__main__':
     parser.add_argument('--target_size', dest='target_size', default=[800], type=int) 
     parser.add_argument('--hyp', type=str, default='hyp.py', help='hyper-parameter path')
     
-    parser.add_argument('--dataset', nargs='?', type=str, default='DOTA')    
+    parser.add_argument('--dataset', nargs='?', type=str, default='DOTA')
     parser.add_argument('--test_path', nargs='?', type=str, default='/content/drive/MyDrive/Colab Notebooks/Rotated-RetinaNet/DOTA/val')
 
     # parser.add_argument('--dataset', nargs='?', type=str, default='IC13')

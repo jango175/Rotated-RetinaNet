@@ -137,7 +137,7 @@ if __name__ == '__main__':
     # parser.add_argument('--ims_dir', type=str, default='HRSC2016/Test') 
     # DOTA 
     parser.add_argument('--dataset', type=str, default='DOTA')
-    parser.add_argument('--ims_dir', type=str, default='DOTA/train')
+    parser.add_argument('--ims_dir', type=str, default='DOTA/test')
     # UCAS-AOD
     # parser.add_argument('--dataset', type=str, default='UCAS_AOD')
     # parser.add_argument('--ims_dir', type=str, default='UCAS_AOD/Test')  
