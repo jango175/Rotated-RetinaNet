@@ -332,6 +332,9 @@ def eval_map(detpath,annopath,imagesetfile, use_07_metric=False):
     classnames = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
                 'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 'harbor', 'swimming-pool', 'helicopter', 'container-crane']
     classaps = []
+    f1_scores = []
+    prec_scores = []
+    rec_scores = []
     map = 0
     for classname in classnames:
         print('classname:', classname)
@@ -342,21 +345,90 @@ def eval_map(detpath,annopath,imagesetfile, use_07_metric=False):
              ovthresh=0.5,
              use_07_metric=use_07_metric)
         map = map + ap
-        print('rec: ', rec, 'prec: ', prec, 'ap: ', ap)
-#         print('ap: ', ap)
+        # print('rec: ', rec, 'prec: ', prec, 'ap: ', ap)
+        print('ap: ', ap)
         classaps.append(ap)
 
         # uncomment to show p-r curve of each category
         plt.figure(figsize=(8,4))
+        plt.title(f'PR Curve for {classname}')
         plt.xlabel('recall')
         plt.ylabel('precision')
         plt.plot(rec, prec)
+        plt.grid()
         plt.savefig(f'PR-curve-{classname}.png')
         plt.show()
+
+        # F1 score
+        f1 = []
+        if len(rec) == len(prec) > 0:
+            for i in range(len(rec)):
+                if prec[i] + rec[i] == 0:
+                    f1.append(0)
+                else:
+                    f1.append(2 * prec[i] * rec[i] / (prec[i] + rec[i]))
+
+        # F1 score vs precision plot
+        plt.figure(figsize=(8,4))
+        plt.title(f'F1 Score vs Precision for {classname}')
+        plt.xlabel('Precision')
+        plt.ylabel('F1 Score')
+        plt.grid()
+        plt.plot(prec, f1)
+        plt.savefig(f'F1-curve-{classname}.png')
+        plt.show()
+
+        f1_scores.append(f1)
+        prec_scores.append(prec)
+        rec_scores.append(rec)
+
     map = map/len(classnames)
     print('map:', map)
     classaps = 100*np.array(classaps)
     print('classaps: ', classaps)
+
+    # plot the AP
+    plt.figure(figsize=(8,6))
+    plt.title('AP for DOTA')
+    plt.xlabel('Classes')
+    plt.ylabel('AP [%]')
+    bars = plt.bar(classnames, classaps, color='skyblue')
+    # add values on top of bars
+    for i, bar in enumerate(bars):
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+                f'{classaps[i]:.1f}', ha='center', va='bottom', fontsize=8)
+
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.grid()
+    plt.savefig('AP-DOTA.png')
+    plt.show()
+
+    # f1 scores plot on the same graph
+    plt.figure(figsize=(8,6))
+    plt.title('F1 Score for DOTA')
+    plt.xlabel('Recall')
+    plt.ylabel('F1 Score')
+    for i, classname in enumerate(classnames):
+        plt.plot(rec_scores[i], f1_scores[i], label=classname)
+    plt.legend()
+    plt.grid()
+    plt.savefig('F1-DOTA.png')
+    plt.show()
+
+    # PR curve for all classes
+    plt.figure(figsize=(8,6))
+    plt.title('PR Curve for DOTA')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    for i, classname in enumerate(classnames):
+        plt.plot(rec_scores[i], prec_scores[i], label=classname)
+    plt.legend()
+    plt.grid()
+    plt.savefig('PR-DOTA.png')
+    plt.show()
+
     return map, classaps
 
 def generate_imageset(img_folder, imagesetfile):

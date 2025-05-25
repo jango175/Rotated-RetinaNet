@@ -155,7 +155,7 @@ class splitbase():
         imgpoly = shgeo.Polygon([(left, up), (right, up), (right, down),
                                  (left, down)])
 
-        if os.path.exists(outdir):
+        if os.path.exists(os.path.join(self.basepath, 'labelTxt')):
             with codecs.open(outdir, 'w', self.code) as f_out:
                 for obj in objects:
                     gtpoly = shgeo.Polygon([(obj['poly'][0], obj['poly'][1]),
