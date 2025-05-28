@@ -249,8 +249,9 @@ if __name__ == '__main__':
     # parser.add_argument('--test_path', type=str, default='HRSC2016/test.txt')        
 
     # DOTA
-    parser.add_argument('--dataset', type=str, default='DOTA')    
+    parser.add_argument('--dataset', type=str, default='DOTA')
     parser.add_argument('--train_path', type=str, default='DOTA/trainval.txt')
+    parser.add_argument('--test_path', type=str, default='DOTA/val')
 
     # IC15
     # parser.add_argument('--dataset', type=str, default='IC15')
